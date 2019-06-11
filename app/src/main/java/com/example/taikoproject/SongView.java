@@ -1,6 +1,9 @@
 package com.example.taikoproject;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -15,11 +18,24 @@ public class SongView extends View {
         super(context, attrs);
     }
 
-    public SongView(Context context, Song song) {
-        super(context);
+    public SongView(Context context, AttributeSet attrs, Song song) {
+        super(context, attrs);
         this.song = song;
     }
 
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        canvas.drawRGB(225, 0, 0);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width = (Resources.getSystem().getDisplayMetrics().widthPixels)/2;
+        int height = Resources.getSystem().getDisplayMetrics().heightPixels - 400;
+        setMeasuredDimension(width, height);
+    }
 
     public boolean playSong() {
         TimerTask task = new TimerTask() {

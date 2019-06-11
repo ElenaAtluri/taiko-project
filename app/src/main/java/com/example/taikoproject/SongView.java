@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,8 +36,8 @@ public class SongView extends View {
         Timer timer = new Timer();
         System.out.println(song.getSongData().toString() + " " + song.getTempo());
         long delay = 60/song.getTempo() * 1000 * 8;
-        long intevalPeriod = 60/song.getTempo() * 1000;
-        timer.scheduleAtFixedRate(task, delay, intevalPeriod);
+        long intervalPeriod = 60/song.getTempo() * 1000;
+        timer.scheduleAtFixedRate(task, delay, intervalPeriod);
 
         return true;
     }

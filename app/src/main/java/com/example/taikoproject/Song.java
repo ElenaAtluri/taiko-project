@@ -6,6 +6,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,34 +18,29 @@ public class Song {
     private int tempo;
     private boolean defaultTempo;
     private int numRepeats;
-    private File file;
+    private InputStream is;
     private List<String> songData;
 
-    public Song(File file, int tempo, int numRepeats) {
+    public Song(InputStream is, int tempo, int numRepeats) {
         this.tempo = tempo;
         defaultTempo = false;
         this.numRepeats = numRepeats;
-        this.file = file;
-        songData = new ArrayList<String>();
-
-        readSong();
+        this.is = is;
+        songData = new ArrayList<>();
     }
-    public Song(File file) {
+    public Song(InputStream is) {
         defaultTempo = true;
         this.numRepeats = 1;
-        this.file = file;
-        songData = new ArrayList<String>();
-
-        readSong();
+        this.is = is;
+        songData = new ArrayList<>();
     }
     public boolean readSong(){
         BufferedReader reader = null;
-        final String DELIMITER = ",";
         int lineNum = 0;
 
         try {
             String line = "";
-            reader = new BufferedReader(new FileReader(file));
+            reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 
             while ((line = reader.readLine()) != null) {
                 if (lineNum == 0 && defaultTempo) {
@@ -103,5 +101,9 @@ public class Song {
 
     public int getTempo() {
         return tempo;
+    }
+
+    public int getNumRepeats() {
+        return numRepeats;
     }
 }

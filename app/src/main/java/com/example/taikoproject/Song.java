@@ -68,32 +68,11 @@ public class Song {
             }
         }
 
-        for (String str : songData) {
-            System.out.println(str);
-        }
+//        for (String str : songData) {
+//            System.out.println(str);
+//        }
         return true;
     }
-
-    /*
-    public boolean playSong() {
-        TimerTask task = new TimerTask() {
-            int counter = 0;
-            @Override
-            public void run() {
-                Log.i("tag",(String)songData.get((int)counter));
-                counter ++;
-                if (counter >= songData.size()) {
-                    cancel();
-                }
-            }
-        };
-        Timer timer = new Timer();
-        long delay = 0;
-        long intervalPeriod = 60/tempo * 1000;
-        timer.scheduleAtFixedRate(task, delay,	intervalPeriod);
-        return true;
-    }
-    */
 
     public List<String> getSongData() {
         return songData;

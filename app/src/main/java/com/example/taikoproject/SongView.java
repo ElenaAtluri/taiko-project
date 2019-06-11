@@ -27,17 +27,18 @@ public class SongView extends View {
             @Override
             public void run() {
                 System.out.println(song.getSongData().get(counter));
-                if (counter >= song.getSongData().size()) {
+                if (++counter >= song.getSongData().size()) {
                     cancel();
                 }
             }
         };
 
         Timer timer = new Timer();
-        System.out.println(song.getSongData().toString() + " " + song.getTempo());
-        long delay = 60/song.getTempo() * 1000 * 8;
-        long intervalPeriod = 60/song.getTempo() * 1000;
-        timer.scheduleAtFixedRate(task, delay, intervalPeriod);
+        double delay = 60.0/song.getTempo() * 1000 * 8;
+        double intervalPeriod = 60.0/song.getTempo() * 1000;
+        long delayLong = (long)delay;
+        long intervalPeriodLong = (long)intervalPeriod;
+        timer.scheduleAtFixedRate(task, delayLong, intervalPeriodLong);
 
         return true;
     }

@@ -5,17 +5,15 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Picture;
 import android.util.AttributeSet;
 import android.view.View;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class SongView extends View {
 
     private Song song;
-    private Paint linePaint, bluePaint;
+    private Paint linePaint;
     private int width, height;
     private int horizontalPadLeft, horizontalPadRight, verticalPadTop, verticalPadBottom;
 
@@ -33,20 +31,19 @@ public class SongView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        System.out.println(height + " ");
         int numBeats = song.getTimeSig()[0];
         int cellHeight = (height-verticalPadTop-verticalPadBottom)/(numBeats*4);
         verticalPadTop += (height-verticalPadTop-verticalPadBottom)%(numBeats*4);
         int cellWidth = (width - 2*horizontalPadLeft)/4;
         horizontalPadLeft += (width - 2*horizontalPadLeft)%4;
+
         for (int i = 0; i < numBeats*4; i++) {
             canvas.drawRect(horizontalPadLeft, verticalPadTop + i*cellHeight, width-horizontalPadRight, verticalPadTop+(i+1)*cellHeight, linePaint);
         }
         for (int j = 0; j < 4; j++) {
-            canvas.drawRect(horizontalPadLeft + j*cellWidth, verticalPadTop, horizontalPadLeft+(j+1)*cellWidth, height-verticalPadBottom, linePaint);
+           canvas.drawRect(horizontalPadLeft + j*cellWidth, verticalPadTop, horizontalPadLeft+(j+1)*cellWidth, height-verticalPadBottom, linePaint);
         }
 //        canvas.drawRect(horizontalPadLeft, verticalPadTop, width-horizontalPadRight, height-verticalPadBottom, bluePaint);
-
     }
 
     @Override
@@ -91,8 +88,5 @@ public class SongView extends View {
         linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         linePaint.setColor(Color.BLACK);
         linePaint.setStyle(Paint.Style.STROKE);
-
-        bluePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bluePaint.setColor(Color.LTGRAY);
     }
 }

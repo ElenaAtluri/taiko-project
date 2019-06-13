@@ -1,9 +1,11 @@
 package com.example.taikoproject;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Picture;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -13,6 +15,9 @@ import java.util.TimerTask;
 public class SongView extends View {
 
     private Song song;
+    private Paint linePaint, bluePaint;
+    private int width, height;
+    private int horizontalPadLeft, horizontalPadRight, verticalPadTop, verticalPadBottom;
 
     public SongView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -21,20 +26,43 @@ public class SongView extends View {
     public SongView(Context context, AttributeSet attrs, Song song) {
         super(context, attrs);
         this.song = song;
+        init();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawRGB(225, 0, 0);
+
+        System.out.println(height + " ");
+        int numBeats = song.getTimeSig()[0];
+        int cellHeight = (height-verticalPadTop-verticalPadBottom)/(numBeats*4);
+        verticalPadTop += (height-verticalPadTop-verticalPadBottom)%(numBeats*4);
+        int cellWidth = (width - 2*horizontalPadLeft)/4;
+        horizontalPadLeft += (width - 2*horizontalPadLeft)%4;
+        for (int i = 0; i < numBeats*4; i++) {
+            canvas.drawRect(horizontalPadLeft, verticalPadTop + i*cellHeight, width-horizontalPadRight, verticalPadTop+(i+1)*cellHeight, linePaint);
+        }
+        for (int j = 0; j < 4; j++) {
+            canvas.drawRect(horizontalPadLeft + j*cellWidth, verticalPadTop, horizontalPadLeft+(j+1)*cellWidth, height-verticalPadBottom, linePaint);
+        }
+//        canvas.drawRect(horizontalPadLeft, verticalPadTop, width-horizontalPadRight, height-verticalPadBottom, bluePaint);
+
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int width = (Resources.getSystem().getDisplayMetrics().widthPixels)/2;
-        int height = Resources.getSystem().getDisplayMetrics().heightPixels - 400;
+        width = (Resources.getSystem().getDisplayMetrics().widthPixels)/2;
+        height = Resources.getSystem().getDisplayMetrics().heightPixels - 400;
+        horizontalPadLeft = 20;
+        horizontalPadRight = 20;
+        verticalPadTop = 40;
+        verticalPadBottom = 220;
         setMeasuredDimension(width, height);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
     }
 
     public boolean playSong() {
@@ -59,5 +87,12 @@ public class SongView extends View {
         return true;
     }
 
+    private void init() {
+        linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        linePaint.setColor(Color.BLACK);
+        linePaint.setStyle(Paint.Style.STROKE);
 
+        bluePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bluePaint.setColor(Color.LTGRAY);
+    }
 }

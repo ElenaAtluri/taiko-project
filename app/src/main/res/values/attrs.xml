@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="SongView">
-    </declare-styleable>
+    <declare-styleable name="SongView"></declare-styleable>
+    <declare-styleable name="AccuracyMeterView"></declare-styleable>
 </resources>

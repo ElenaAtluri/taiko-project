@@ -18,6 +18,8 @@ public class Song {
     private int tempo;
     private boolean defaultTempo;
     private int numRepeats;
+    private String songName;
+    private int[] timeSig;
     private InputStream is;
     private List<String> songData;
 
@@ -43,8 +45,15 @@ public class Song {
             reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 
             while ((line = reader.readLine()) != null) {
-                if (lineNum == 0 && defaultTempo) {
+                if (lineNum == 0) {
+                    songName = line;
+                }
+                if (lineNum == 1 && defaultTempo) {
                     tempo = Integer.parseInt(line);
+                }
+                if (lineNum == 2) {
+                    String[] timeSigValues = line.split("/");
+                    timeSig = new int[] {Integer.parseInt(timeSigValues[0]), Integer.parseInt(timeSigValues[1])};
                 }
                 else {
                     songData.add(line);
@@ -84,5 +93,9 @@ public class Song {
 
     public int getNumRepeats() {
         return numRepeats;
+    }
+
+    public int[] getTimeSig() {
+        return timeSig;
     }
 }

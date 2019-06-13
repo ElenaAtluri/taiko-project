@@ -16,25 +16,24 @@ public class Song {
     private String songName;
     private int[] timeSig;
     private InputStream is;
-    private List<String> songData;
+    private List<String> lineData;
 
     public Song(InputStream is, int tempo, int numRepeats) {
         this.tempo = tempo;
         defaultTempo = false;
         this.numRepeats = numRepeats;
         this.is = is;
-        songData = new ArrayList<>();
-
+        lineData = new ArrayList<>();
         readSong();
     }
     public Song(InputStream is) {
         defaultTempo = true;
         this.numRepeats = 1;
         this.is = is;
-        songData = new ArrayList<>();
-
+        lineData = new ArrayList<>();
         readSong();
     }
+
     private boolean readSong(){
         BufferedReader reader = null;
         int lineNum = 0;
@@ -47,15 +46,15 @@ public class Song {
                 if (lineNum == 0) {
                     songName = line;
                 }
-                if (lineNum == 1 && defaultTempo) {
+                else if (lineNum == 1 && defaultTempo) {
                     tempo = Integer.parseInt(line);
                 }
-                if (lineNum == 2) {
+                else if (lineNum == 2) {
                     String[] timeSigValues = line.split("/");
                     timeSig = new int[] {Integer.parseInt(timeSigValues[0]), Integer.parseInt(timeSigValues[1])};
                 }
                 else {
-                    songData.add(line);
+                    lineData.add(line);
                 }
                 lineNum++;
             }
@@ -75,14 +74,14 @@ public class Song {
             }
         }
 
-//        for (String str : songData) {
+//        for (String str : lineData) {
 //            System.out.println(str);
 //        }
         return true;
     }
 
-    public List<String> getSongData() {
-        return songData;
+    public List<String> getLineData() {
+        return lineData;
     }
 
     public int getTempo() {

@@ -11,9 +11,13 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static android.graphics.Color.argb;
+import static android.graphics.Color.rgb;
 
 public class SongView extends View {
 
@@ -22,14 +26,18 @@ public class SongView extends View {
     private int horizontalPadLeft, horizontalPadRight, verticalPadTop, verticalPadBottom;
     private int cellHeight;
     private int currentBeat;
+    private int currentRun;
     private List<HitObject> hitObjectList;
 
     private Paint linePaint;
     private Paint outlinePaint;
     private Paint redPaint;
     private Paint bluePaint;
+    private Paint coverPaint;
 
     private GestureDetector detector;
+
+    public final int BOLD = 4;
 
     public SongView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -46,7 +54,6 @@ public class SongView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        System.out.println("onDraw");
         super.onDraw(canvas);
 
         int numBeats = song.getTimeSig()[0];
@@ -59,33 +66,40 @@ public class SongView extends View {
             canvas.drawRect(horizontalPadLeft, verticalPadTop + i*cellHeight, width-horizontalPadRight, verticalPadTop+(i+1)*cellHeight, linePaint);
         }
         for (int j = 0; j < 4; j++) {
-           canvas.drawRect(horizontalPadLeft + j*cellWidth, verticalPadTop, horizontalPadLeft+(j+1)*cellWidth, height-verticalPadBottom, linePaint);
+           canvas.drawRect(horizontalPadLeft + j*cellWidth, verticalPadTop, horizontalPadLeft+(j+1)*cellWidth, height-verticalPadBottom, outlinePaint);
         }
         canvas.drawRect(horizontalPadLeft, verticalPadTop, width-horizontalPadRight, height-verticalPadBottom, outlinePaint);
 
-        float radius = (float)(cellHeight/2.0);
-
         for (int k = 0; k < hitObjectList.size(); k ++) {
             HitObject hit = hitObjectList.get(k);
-            if (hit.getY() <= cellHeight*song.getTimeSig()[0]*4) {
+            if (hit.getY() > cellHeight*song.getTimeSig()[0]*3) {
+                hit.setRadius((int)(hit.getRadius()*1.1));
+            }
+            if (hit.getY() > cellHeight*song.getTimeSig()[0]*4) {
+                hit.setRadius((int)(hit.getRadius()*0.8));
+            }
+            if (hit.getY() <= cellHeight*song.getTimeSig()[0]*4.5) {
                 switch (hit.getHitType()) {
                     case HitObject.LEFT_KA:
-                        canvas.drawCircle((float) (horizontalPadLeft + cellWidth * (1 / 2.0)), hit.getY() + verticalPadTop, radius, redPaint);
+                        canvas.drawCircle((float) (horizontalPadLeft + cellWidth * (1 / 2.0)), hit.getY() + verticalPadTop, hit.getRadius(), createColorPaint(hit.getColor()));
                         break;
                     case HitObject.LEFT_DON:
-                        canvas.drawCircle((float) (horizontalPadLeft + cellWidth * (3 / 2.0)), hit.getY() + verticalPadTop, radius, redPaint);
-                        break;
+                        canvas.drawCircle((float) (horizontalPadLeft + cellWidth * (3 / 2.0)), hit.getY() + verticalPadTop, hit.getRadius(), createColorPaint(hit.getColor()));
+                        break
                     case HitObject.RIGHT_DON:
-                        canvas.drawCircle((float) (horizontalPadLeft + cellWidth * (5.0 / 2)), hit.getY() + verticalPadTop, radius, bluePaint);
+                        canvas.drawCircle((float) (horizontalPadLeft + cellWidth * (5.0 / 2)), hit.getY() + verticalPadTop, hit.getRadius(), createColorPaint(hit.getColor()));
                         break;
                     case HitObject.RIGHT_KA:
-                        canvas.drawCircle((float) (horizontalPadLeft + cellWidth * (7.0 / 2)), hit.getY() + verticalPadTop, radius, bluePaint);
+                        canvas.drawCircle((float) (horizontalPadLeft + cellWidth * (7.0 / 2)), hit.getY() + verticalPadTop, hit.getRadius(), createColorPaint(hit.getColor()));
                         break;
                     default:
                         break;
                 }
             }
         }
+
+//        canvas.drawRect(0, 0, width, verticalPadTop, coverPaint);
+
     }
 
     @Override
@@ -121,6 +135,7 @@ public class SongView extends View {
         // for each num repeat, play song once
         // play song
         currentBeat = 0;
+        currentRun = 1;
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -135,6 +150,14 @@ public class SongView extends View {
                     for (int i = 0; i < beatData.length; i++) {
                         if (Integer.parseInt(beatData[i]) == 1) {
                             HitObject hit = new HitObject(i, currentBeat);
+                            System.out.println(i);
+                            if (i == HitObject.LEFT_DON || i == HitObject.LEFT_KA) {
+                                hit.setColor(rgb(154, 220, 223));
+                            } else if (i == HitObject.RIGHT_DON || i == HitObject.RIGHT_KA) {
+                                hit.setColor(rgb(252, 104, 114));
+                            }
+                            hit.setRadius((cellHeight/2));
+                            System.out.println(hit.toString());
                             hit.setY(0);
                             hitObjectList.add(hit);
                         }
@@ -142,12 +165,14 @@ public class SongView extends View {
                     currentBeat ++;
                 }
                 postInvalidate();
+                if (hitObjectList.get(hitObjectList.size()-1).getY() > cellHeight*song.getTimeSig()[0]*4.5 && currentRun >= song.getNumRepeats()) {
+                    cancel();
+                }
             }
         };
         long intervalPeriod = (long)(60.0/song.getTempo() * 1000);
-        System.out.println(intervalPeriod);
         Timer timer = new Timer();
-        timer.schedule(task, 0, intervalPeriod);
+        timer.schedule(task, intervalPeriod, intervalPeriod);
         // delay 4 measure end time
         return true;
     }
@@ -160,7 +185,7 @@ public class SongView extends View {
         outlinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         outlinePaint.setColor(Color.BLACK);
         outlinePaint.setStyle(Paint.Style.STROKE);
-        outlinePaint.setStrokeWidth(4);
+        outlinePaint.setStrokeWidth(BOLD);
 
         redPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         redPaint.setColor(Color.RED);
@@ -169,5 +194,12 @@ public class SongView extends View {
         bluePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         bluePaint.setColor(Color.BLUE);
         bluePaint.setStyle(Paint.Style.FILL_AND_STROKE);
+    }
+
+    private Paint createColorPaint(int color) {
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(color);
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        return paint;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.taikoproject;
 
+import android.graphics.Color;
+
 public class HitObject {
 
     public static final int LEFT_KA = 0;
@@ -10,6 +12,8 @@ public class HitObject {
     private int hitType;
     private int hitTime;
     private int y;
+    private int radius;
+    private int color;
 
     public HitObject(int value, int hitTime) {
         this.hitType = value;
@@ -50,5 +54,42 @@ public class HitObject {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public String toString() {
+        String hitTypeStr = "";
+        switch (hitType) {
+            case LEFT_KA:
+                hitTypeStr = "L Ka";
+                break;
+            case LEFT_DON:
+                hitTypeStr = "L Don";
+                break;
+            case RIGHT_DON:
+                hitTypeStr = "R Don";
+                break;
+            case RIGHT_KA:
+                hitTypeStr = "R Ka";
+                break;
+            default:
+                break;
+        }
+        return "hit: " + hitTypeStr + " hitTime: " + hitTime + " color: " + color;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }

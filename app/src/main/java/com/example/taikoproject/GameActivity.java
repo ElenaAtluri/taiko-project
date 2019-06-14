@@ -24,7 +24,6 @@ public class GameActivity extends AppCompatActivity {
         layout.addView(songView);
         layout.addView(accuracyMeterView);
         songView.playSong();
-
     }
 
 }
